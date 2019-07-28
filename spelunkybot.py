@@ -3,8 +3,8 @@ from time import sleep
 from keyboard import press, release, wait
 from spelunkymemreader import readWord
 
-up, left, down, right = 'i', 'j', 'k', 'l' #cannot use arrow keys; keyboard module outputs numpad arrow events
-jump, whip, bomb, rope = 'z', 'x', 'a', 's' #bomb and rope switched from defaults!
+up, down, left, right = 'i', 'k', 'j', 'l' #cannot use arrow keys; keyboard module outputs numpad arrow events
+whip, jump, bomb, rope = 'x', 'z', 'a', 's' #bomb and rope switched from defaults!
 door = 'space' #also purchase
 #run is toggled on at all times
 
@@ -40,7 +40,7 @@ def play():
     elif action > 100:
         press(whip)
 
-    sleep(randint(1,60) / 60) #1-60 frames of a random action
+    sleep(randint(1,120) / 60) #1-120 frames of a random action
     for i in [up, left, down, right, jump, whip, bomb, rope]:
         release(i)
         
@@ -58,12 +58,19 @@ def levelTransition():
     sleep(1)
     
 def restart():
+    info = readWord(pid, readWord(pid, readWord(pid, 0x278558) + 0x30) + 0x280)
+    level = readWord(pid, info - 0xc0)
+    money = readWord(pid, info + 0x5298)
+    minutes = readWord(pid, info + 0x52ac)
+    seconds = readWord(pid, info + 0x52b0)
+    print('death: level ',level,', $',money,', time ',minutes,':',seconds, sep='')
+
     press(whip)
     sleep(1/60)
     release(whip)
     sleep(1)
 
-print('click into spelunky then press p to start the bot')
+print('click into spelunky, then press p to start the bot')
 wait('p')
 while 1:
     gs = gameState()
